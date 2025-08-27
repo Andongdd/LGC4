@@ -1,0 +1,6 @@
+__pycache__
+venv
+*.pyc
+amazon.cpython-312.pyc
+.vscode
+reports
