@@ -1,10 +1,10 @@
-from scrapers import amazon
+from scrapers import amazon, lg
 
-model_list = ["OLED55C4"] #, "OLED65C4", "OLED55B4", "OLED65B4"
+model_list = ["OLED55C4", "OLED65C4", "OLED55B4", "OLED65B4"] #, "OLED65C4", "OLED55B4", "OLED65B4"
 
 scrapers = {
     "Amazon": amazon.scrape,
-    # "LG": lg.scrape,
+    "LG": lg.scrape,
 }
 
 for model in model_list:
