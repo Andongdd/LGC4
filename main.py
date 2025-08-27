@@ -1,24 +1,17 @@
-import yaml
-import pandas as pd
-from datetime import datetime
-from scrapers import amazon, currys, richer, johnlewis
+from scrapers import amazon
 
-with open("config.yaml", "r") as f:
-    config = yaml.safe_load(f)
+model_list = ["OLED55C4"] #, "OLED65C4", "OLED55B4", "OLED65B4"
 
-models = config["models"]
-sites = config["sites"]
+scrapers = {
+    "Amazon": amazon.scrape,
+    # "LG": lg.scrape,
+}
 
-results = []
-
-for model in models:
-    results += amazon.scrape(sites["amazon"].format(query=model), model)
-    results += currys.scrape(sites["currys"].format(query=model), model)
-    results += richer.scrape(sites["richersounds"].format(query=model), model)
-    results += johnlewis.scrape(sites["johnlewis"].format(query=model), model)
-
-df = pd.DataFrame(results)
-df["timestamp"] = datetime.now()
-
-df.to_csv("data/prices.csv", mode="a", index=False, header=not pd.io.common.file_exists("data/prices.csv"))
-print(df)
+for model in model_list:
+    for site, func in scrapers.items():
+        try:
+            rows = func(model)
+            for r in rows:
+                print(f"[{site}] {r['model']} - {r['price']} - {r['title']} - {r['url']}")
+        except Exception as e:
+            print(f"[{site}] {model} failed: {e}")
