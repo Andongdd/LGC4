@@ -1,0 +1,9 @@
+models:
+  - "LG OLED65B4"
+  - "LG OLED65C4"
+
+sites:
+  amazon: "https://www.amazon.co.uk/s?k={query}"
+  currys: "https://www.currys.co.uk/search?q={query}"
+  richersounds: "https://www.richersounds.com/search?query={query}"
+  johnlewis: "https://www.johnlewis.com/search?search-term={query}"
