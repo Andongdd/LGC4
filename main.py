@@ -1,5 +1,6 @@
 from scrapers import amazon, lg
 from utils.report import render_and_save
+from utils.notify import check_and_notify
 
 model_list = ["OLED55C4", "OLED65C4", "OLED55B4", "OLED65B4"] #, "OLED65C4", "OLED55B4", "OLED65B4"
 
@@ -26,4 +27,8 @@ for model in model_list:
             print(f"[{site}] {model} failed: {e}")
 
 # 一次性渲染与导出
-render_and_save(all_rows)
+df = render_and_save(all_rows)
+
+# 触发检查
+hits = check_and_notify(df, delta_step=1.0, force_send=False, verbose=True)
+print("Triggered:", hits.keys() if hits else "None")
