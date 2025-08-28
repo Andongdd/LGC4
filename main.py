@@ -11,7 +11,7 @@ from pathlib import Path
 from filelock import FileLock, Timeout
 from dotenv import load_dotenv
 
-from scrapers import amazon, lg
+from scrapers import amazon, lg, smiths
 from utils.report import render_and_save
 from utils.notify import check_and_notify
 
@@ -33,11 +33,12 @@ if not logger.handlers:
     logger.addHandler(h)
 logger.setLevel(LOG_LEVEL)
 
-model_list = ["OLED55C4", "OLED65C4", "OLED55B4", "OLED65B4"] #, "OLED65C4", "OLED55B4", "OLED65B4"
+model_list = ["OLED55C4", "OLED65C4", "OLED55B4", "OLED65B4"]
 
 scrapers = {
     "Amazon": amazon.scrape,
     "LG": lg.scrape,
+    "Smiths": smiths.scrape,
 }
 
 def collect_all_rows() -> list[dict]:
@@ -134,3 +135,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # rows = collect_all_rows()
+    # if not rows:
+    #     logger.info("本轮未抓到数据（all_rows 为空）。")
+    # df = render_and_save(rows)                    # 生成 CSV/HTML & 终端表格
+    # hits = check_and_notify(df, verbose=False) 
