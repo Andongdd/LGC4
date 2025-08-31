@@ -16,7 +16,7 @@ from utils.report import render_and_save
 from utils.notify import check_and_notify
 
 # ---------------- 配置（可被 .env 覆盖） ----------------
-DEFAULT_RUN_INTERVAL_MIN = 30          # 运行间隔（分钟）
+DEFAULT_RUN_INTERVAL_MIN = 20          # 运行间隔（分钟）
 DEFAULT_RUN_HOUR_START   = 9           # 活跃时段起始整点（含）
 DEFAULT_RUN_HOUR_END     = 23          # 活跃时段结束整点（含）
 DEFAULT_JITTER_SEC_MIN   = 0           # 每轮执行前的随机抖动（秒）
@@ -54,6 +54,7 @@ def collect_all_rows() -> list[dict]:
                         "model": r.get("model") or model,
                         "price": r.get("price"),
                         "title": r.get("title"),
+                        "in_stock": r.get("in_stock"),
                         "url": r.get("url"),
                     })
             except Exception as e:

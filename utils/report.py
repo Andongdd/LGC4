@@ -1,4 +1,3 @@
-# utils/report.py
 from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
@@ -19,7 +18,7 @@ def _to_num(x):
 
 def render_and_save(results: list[dict], outdir: str = "reports") -> pd.DataFrame:
     """
-    results: [{'site':..., 'model':..., 'price':..., 'title':..., 'url':...}, ...]
+    results: [{'site':..., 'model':..., 'price':..., 'title':..., 'url':..., 'in_stock':...}, ...]
     - 整理为 DataFrame
     - 价格转数字、按 model/site 排序
     - 标注每个 model 的最低价(best=True)
@@ -30,7 +29,7 @@ def render_and_save(results: list[dict], outdir: str = "reports") -> pd.DataFram
         print("No results.")
         return pd.DataFrame()
 
-    df = pd.DataFrame(results, columns=["site", "model", "price", "title", "url"])
+    df = pd.DataFrame(results, columns=["site", "model", "price", "title", "url", "in_stock"])
 
     # 价格转数值，便于排序/比较
     df["price_num"] = df["price"].map(_to_num)
@@ -60,7 +59,10 @@ def render_and_save(results: list[dict], outdir: str = "reports") -> pd.DataFram
         df.drop(columns=["price_num"])
           .style
           .apply(lambda s: ["font-weight:700;color:#0b6" if b else "" for b in df["best"]], subset=["price"])
-          .format({"url": lambda u: f'<a href="{u}" target="_blank">link</a>'}, na_rep="")
+          .format({
+              "url": lambda u: f'<a href="{u}" target="_blank">link</a>',
+              "in_stock": lambda x: "✅" if x else "❌"
+          }, na_rep="")
           .hide(axis="index")
     )
     styled.to_html(html_path, doctype_html=True)
@@ -73,12 +75,13 @@ def render_and_save(results: list[dict], outdir: str = "reports") -> pd.DataFram
 
         console = Console()
         table = Table(title="TV Price Report", box=box.SIMPLE_HEAVY)
-        for col in ["model", "site", "price", "title", "url"]:
+        for col in ["model", "site", "price", "in_stock", "title", "url"]:
             table.add_column(col, overflow="fold")
 
         for _, r in df.drop(columns=["price_num"]).iterrows():
             price_text = f"[bold green]{r.price}[/]" if r.get("best") else str(r.price)
-            table.add_row(str(r.model), str(r.site), price_text, str(r.title), str(r.url))
+            stock_text = "✅" if r.in_stock else "❌"
+            table.add_row(str(r.model), str(r.site), price_text, stock_text, str(r.title), str(r.url))
         console.print(table)
     except Exception:
         # 退化为普通打印

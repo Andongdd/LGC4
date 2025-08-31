@@ -36,11 +36,15 @@ def scrape(model: str):
     candidates = _parse_search_items(html, model)
     out = []
     for c in candidates:
+        price = c["price"]
+        in_stock = bool(price)  # 只要有价格就认为有货，否则无货
+
         out.append({
             "site": "Amazon",
             "model": model,
             "title": c["title"],
-            "price": c["price"] or "N/A",
+            "price": price or "N/A",
             "url": c["url"],
+            "in_stock": in_stock,
         })
     return list({r["url"]: r for r in out if r["url"]}.values())

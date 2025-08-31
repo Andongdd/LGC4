@@ -7,7 +7,7 @@ from utils.session import build_session, safe_get
 
 SITE = "LG UK"
 
-# 固定链接列表（你提供的）
+# 固定链接列表
 PRODUCT_URLS = {
     "OLED65C4": "https://www.lg.com/uk/tvs-soundbars/oled-evo/oled65c46la/",
     "OLED55C4": "https://www.lg.com/uk/tvs-soundbars/oled-evo/oled55c46la/",
@@ -27,6 +27,7 @@ def extract_jsonld_price(soup: BeautifulSoup):
         except Exception:
             continue
 
+        # 有些是 list 包裹的 JSON-LD
         if isinstance(data, list):
             for item in data:
                 result = _extract_price(item)
@@ -41,6 +42,9 @@ def extract_jsonld_price(soup: BeautifulSoup):
 
 
 def _extract_price(data: dict):
+    """
+    从一个 JSON-LD dict 中提取价格和库存状态。
+    """
     if data.get("@type") != "product":
         return None
 
@@ -48,15 +52,13 @@ def _extract_price(data: dict):
     if not isinstance(offer, dict):
         return None
 
-    price = offer.get("price")  # 可能是空字符串
-    availability = offer.get("availability", "")
-    
-    # 判断是否有货
-    in_stock = bool(price and price.strip()) and "instock" in availability.lower()
+    price = offer.get("price")
+    availability = offer.get("availability", "").lower()
 
-    # 即使 price 是空字符串，也返回
+    # availability = "https://schema.org/OutOfStock" or "InStock"
+    in_stock = bool(price and price.strip()) and "instock" in availability
+
     return price or None, in_stock
-
 
 
 def scrape(model: str, verify: bool = True):
@@ -78,7 +80,7 @@ def scrape(model: str, verify: bool = True):
                 "site": SITE,
                 "model": model,
                 "title": title,
-                "price": f"£{price}" if price else None,
+                "price": f"£{price}" if price else "N/A",
                 "in_stock": in_stock,
                 "url": url,
             }]
@@ -86,9 +88,9 @@ def scrape(model: str, verify: bool = True):
     return []
 
 
-# 本地调试
+# 本地调试用
 if __name__ == "__main__":
-    for m in ["LG OLED65C4", "LG OLED55B4"]:
+    for m in ["LG OLED65C4", "LG OLED55B4", "LG OLED65B4"]:
         rows = scrape(m)
         print(f"\n>>> {m}")
         for r in rows:

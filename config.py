@@ -9,7 +9,7 @@ THRESHOLDS = {
 # 邮件发送配置（建议用环境变量）
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_USER = "@gmail.com"   
-SMTP_PASS = "iilz vcqp twxw"        
-MAIL_TO   = ["@outlook.com"]
+SMTP_USER = "andongxiaooo@gmail.com"   
+SMTP_PASS = "lbhp iilz vcqp twxw"        
+MAIL_TO   = ["andongxiaoo@outlook.com"]
 MAIL_FROM = SMTP_USER

@@ -4,3 +4,4 @@ venv
 amazon.cpython-312.pyc
 .vscode
 reports
+config.py
